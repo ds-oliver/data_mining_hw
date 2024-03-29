@@ -1,0 +1,109 @@
+6.1 Predicting Boston Housing Prices. The file BostonHousing.csv contains information
+collected by the US Bureau of the Census concerning housing in the area of
+Boston, Massachusetts. The dataset includes information on 506 census housing tracts
+in the Boston area. The goal is to predict the median house price in new tracts based
+on information such as crime rate, pollution, and number of rooms. The dataset contains
+13 predictors, and the response is the median house price (MEDV). Table 6.9
+describes each of the predictors and the response.
+
+a. Why should the data be partitioned into training and validation sets? What will the
+training set be used for? What will the validation set be used for?
+
+The data should be partitioned into training and validation sets to evaluate the performance of a predictive model. The training set is used to train the model by fitting it to the data, while the validation set is used to assess the model's performance on unseen data. This helps to estimate how well the model will generalize to new, unseen data and avoid overfitting.
+
+b. Fit a multiple linear regression model to the median house price (MEDV) as a
+function of CRIM, CHAS, and RM. Write the equation for predicting the median
+house price from the predictors in the model.
+
+See notebook for code. The equation for predicting the median house price from the predictors in the model is: "MEDV = -28.356070860664055 + -0.2738034010686842 * CRIM + 4.626240519823261 * CHAS + 8.217652435568006 * RM"
+
+c. Using the estimated regression model, what median house price is predicted for a
+tract in the Boston area that does not bound the Charles River, has a crime rate of
+0.1, and where the average number of rooms per house is 6? What is the prediction
+error?
+
+See notebook for code. The predicted median house price is $20.92. The prediction error is 1.61.
+
+d. Reduce the number of predictors:
+
+i. Which predictors are likely to be measuring the same thing among the 13
+predictors? Discuss the relationships among INDUS, NOX, and TAX.
+The heatmap shows several high correlations between predictors, indicating that they might be measuring similar things:
+
+INDUS and NOX (0.76): A high positive correlation suggests that industrial areas (INDUS) tend to have higher pollution levels (NOX), likely due to industrial emissions.
+
+INDUS and TAX (0.72): A strong positive correlation indicates that more industrially zoned areas (INDUS) are associated with higher property tax rates (TAX), which may reflect higher municipal costs related to industrial zones or higher property values due to commercial use.
+
+NOX and TAX (0.67): This significant correlation suggests that areas with higher pollution levels (NOX) also have higher property tax rates (TAX), which might be due to the urban and developed nature of these areas.
+
+RAD and TAX (0.91): This very high correlation means that the accessibility to radial highways (RAD) is closely related to the property tax rate (TAX), which could indicate that areas with better transportation links are valued higher and thus taxed more.
+
+These relationships suggest that INDUS, NOX, and TAX are all related to urban development and industrialization levels. RAD and TAX might be measuring aspects related to infrastructure development and fiscal policy.
+
+ii. Compute the correlation table for the 12 numerical predictors and search for
+highly correlated pairs. These have potential redundancy and can cause multicollinearity.
+Choose which ones to remove based on this table.
+Based on the heatmap, highly correlated pairs include:
+
+RAD and TAX (0.91): Given this very high correlation, one of these should be considered for removal to reduce multicollinearity. Since TAX also correlates with other variables, RAD could be a candidate for removal.
+
+INDUS and NOX (0.76): Given their strong correlation, one of these variables might be removed. NOX could be preferred for retention because it directly measures air quality, which is a significant factor for living conditions.
+
+INDUS and TAX (0.72): Similarly, considering the redundancy between INDUS and TAX, INDUS could be removed if TAX is considered a more direct measure of economic burden, or if the focus is on environmental quality, TAX could be removed, and NOX retained.
+
+NOX and AGE (0.73): AGE is also highly correlated with NOX, which might not be immediately intuitive. If AGE is not of particular interest to the research question, it might be a candidate for removal to simplify the model.
+
+DIS and NOX (-0.77): DIS, representing the distance to employment centers, is inversely related to NOX, with a high correlation. Since NOX is also highly correlated with INDUS and TAX, DIS might be retained for its unique contribution to the model, capturing a different aspect of the housing characteristics related to location.
+
+In conclusion, RAD could be removed due to its high correlation with TAX. Between INDUS and NOX, a decision could be made based on the specific context of the analysis. If environmental concerns are more relevant, NOX could be retained over INDUS. If the focus is more on zoning and industrial presence, INDUS might be preferred.
+
+iii. Use stepwise regression with the three options (backward, forward, both) to reduce
+the remaining predictors as follows: Run stepwise on the training set. Choose
+the top model from each stepwise run. Then use each of these models separately
+to predict the validation set. Compare RMSE, MAPE, and mean error, as well
+as lift charts. Finally, describe the best model.
+
+Backward stepwise regression: RMSE = 3.72, MAPE = 13.39%, mean error = 0.05
+Forward stepwise regression: RMSE = 5.46, MAPE = 26.72%, mean error = -0.55
+Both stepwise regression: RMSE = 5.46, MAPE = 26.72%, mean error = -0.55
+The best model is the backward stepwise regression model, which has the lowest RMSE and MAPE, and the smallest mean error. On the 'both stepwise' - the fact that it has the same performance as the forward stepwise regression suggests that it did not remove any variables after adding them, ending up with the same model as the forward selection.
+
+
+7.3 Predicting Housing Median Prices. The file BostonHousing.csv contains information
+on over 500 census tracts in Boston, where for each tract multiple variables
+are recorded. The last column (CAT.MEDV) was derived from MEDV, such that it
+obtains the value 1 if MEDV > 30 and 0 otherwise. Consider the goal of predicting
+the median value (MEDV) of a tract, given the information in the first 12 columns.
+Partition the data into training (60%) and validation (40%) sets.
+
+a. Perform a k-NN prediction with all 12 predictors (ignore the CAT.MEDV column),
+trying values of k from 1 to 5. Make sure to normalize the data, and choose
+function knn() from package class rather than package FNN. To make sure R is
+using the class package (when both packages are loaded), use class::knn(). What
+is the best k? What does it mean?
+The best k is 2. This means that the k-NN model with k = 2 has the lowest RMSE on the validation set.
+
+b. Predict the MEDV for a tract with the following information, using the best k:
+
+This information was not given so i computed the range of the data and generated a random value for each predictor.
+
+c. If we used the above k-NN algorithm to score the training data, what would be
+the error of the training set?
+
+The RMSE of the training set is 1.63.
+
+d. Why is the validation data error overly optimistic compared to the error rate when
+applying this k-NN predictor to new data?
+
+The validation data error is overly optimistic compared to the error rate when applying this k-NN predictor to new data because the model is being trained and validated on the same data. This means that the model is being tested on data that it has already seen, which can lead to overly optimistic results. In other words, the model may perform well on the validation set because it has already seen the data, but it may not perform as well on new data.
+
+e. If the purpose is to predict MEDV for several thousands of new tracts, what would
+be the disadvantage of using k-NN prediction? List the operations that the algorithm
+goes through in order to produce each prediction.
+
+The disadvantage of using k-NN prediction for several thousands of new tracts is that it can be computationally expensive. For each prediction, the algorithm goes through the following operations:
+1. Normalize the new data
+2. Compute the distance between the new data and each data point in the training set
+3. Select the k nearest neighbors
+4. Compute the predicted value based on the k nearest neighbors
+This process needs to be repeated for each new data point, which can be time-consuming for a large number of new tracts.
